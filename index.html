@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام المناوبة المدرسية - مدرسة سعيد بن سلطان</title>
+    <style>
+        :root {
+            --sky-bg: #f0f9ff; --deep-sky: #0ea5e9; --dark-blue: #0c4a6e;
+            --white: #ffffff; --danger: #ef4444; --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(180deg, #bae6fd 0%, var(--sky-bg) 100%);
+            margin: 0; min-height: 100vh; display: flex; flex-direction: column; color: #334155;
+        }
+
+        header { background: var(--dark-blue); color: white; padding: 20px; text-align: center; box-shadow: var(--shadow); }
+        footer { background: var(--dark-blue); color: #cbd5e1; text-align: center; padding: 15px; margin-top: auto; }
+
+        .container { max-width: 1200px; margin: 20px auto; width: 95%; background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 15px; box-shadow: var(--shadow); }
+
+        #login-screen { max-width: 400px; margin: 50px auto; padding: 30px; background: white; border-radius: 15px; text-align: center; box-shadow: var(--shadow); }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        
+        button { padding: 10px 20px; background: var(--deep-sky); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 5px; }
+        button:hover { background: var(--dark-blue); }
+        .btn-del { background: var(--danger); }
+        .btn-success { background: #10b981; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; flex-wrap: wrap; }
+        .tab-btn { background: #e2e8f0; color: #475569; border: none; }
+        .tab-btn.active { background: var(--deep-sky); color: white; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; }
+        th { background: #f1f5f9; color: var(--dark-blue); }
+
+        .print-header { display: none; text-align: center; border: 2px solid #000; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .print-header h2 { margin: 0; font-size: 24pt; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: right; font-weight: bold; }
+
+        @media print {
+            .no-print, .tab-btn, button, header, footer, #sync-banner { display: none !important; }
+            .print-header { display: block; }
+            body { background: white; }
+            .container { box-shadow: none; width: 100%; margin: 0; padding: 0; border:none; }
+            table { width: 100%; border: 1px solid #000; }
+            th { background: #eee !important; color: black; }
+        }
+        
+        .multi-select-box { border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; background: white; }
+        .card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .loc-tag { background:#e2e8f0; padding:5px 10px; margin:4px; display:inline-block; border-radius:15px; font-size:0.9rem; }
+        
+        /* شريط المزامنة */
+        #sync-banner {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #10b981; color: white; text-align: center; padding: 8px; font-size: 0.9rem; font-weight: bold; display: none; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 style="margin:0">مدرسة سعيد بن سلطان</h1>
+    <p style="margin:5px 0 0 0">نظام المناوبة المدرسية (متصل بالسحابة)</p>
+</header>
+
+<div id="sync-banner">جاري مزامنة البيانات...</div>
+
+<div class="container">
+    <div id="login-screen">
+        <h3 style="color:var(--dark-blue)">تسجيل الدخول للنظام</h3>
+        <input type="text" id="user-input" placeholder="اسم المستخدم">
+        <input type="password" id="pass-input" placeholder="كلمة المرور">
+        <button onclick="handleLogin()" style="width:100%">دخول</button>
+    </div>
+
+    <div id="main-content" style="display:none">
+        <div class="no-print">
+            <div id="admin-nav" class="tabs">
+                <button class="tab-btn active" onclick="switchSection('admin-config')">إعدادات النظام</button>
+                <button class="tab-btn" onclick="switchSection('daily-schedule')">عرض الجداول</button>
+                <button class="tab-btn" onclick="switchSection('admin-notes')">الملاحظات</button>
+                <button class="btn-del" onclick="logout()" style="margin-right:auto">خروج</button>
+            </div>
+            <div id="sup-nav" class="tabs" style="display:none">
+                <button class="tab-btn active" onclick="switchSection('sup-interface')">توزيع المناوبين</button>
+                <button class="tab-btn" onclick="switchSection('sup-final-view')">معاينة الطباعة</button>
+                <button class="btn-del" onclick="logout()" style="margin-right:auto">خروج</button>
+            </div>
+        </div>
+
+        <div class="print-header">
+            <h2>مدرسة سعيد بن سلطان</h2>
+            <h3 id="p-title">كشف توزيع المناوبة اليومية</h3>
+            <hr>
+            <div class="info-grid">
+                <div>اليوم: <span id="p-day"></span></div>
+                <div>المادة/القسم: <span id="p-subject"></span></div>
+                <div>المشرف المسؤول: <span id="p-sup"></span></div>
+                <div>تاريخ اليوم: <span id="p-date"></span></div>
+            </div>
+        </div>
+
+        <div id="admin-config" class="section active">
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
+                <div class="card">
+                    <h4 id="form-title" style="margin-top:0">إضافة/تعديل مشرف</h4>
+                    <input type="hidden" id="edit-index" value="-1">
+                    <input type="text" id="sup-name" placeholder="اسم المشرف">
+                    <input type="text" id="sup-pass" placeholder="كلمة المرور">
+                    <select id="sup-subject">
+                        <option value="">اختر المادة...</option>
+                        <option>التربية الإسلامية</option><option>اللغة العربية</option><option>اللغة الإنجليزية</option>
+                        <option>الدراسات الاجتماعية</option><option>الرياضيات</option><option>العلوم</option><option>المهارات</option>
+                    </select>
+                    <select id="sup-day">
+                        <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option>
+                    </select>
+                    <textarea id="teacher-paste" rows="4" placeholder="أدخل أسماء المعلمين (اسم في كل سطر)..."></textarea>
+                    <button onclick="saveSupervisor()" id="save-btn" style="width:100%">حفظ بيانات المشرف</button>
+                    <button onclick="resetForm()" class="btn-del" style="width:100%; display:none; background:#64748b" id="cancel-btn">إلغاء التعديل</button>
+                </div>
+                <div>
+                    <h4 style="margin-top:0">المشرفون المسجلون</h4>
+                    <table id="sup-list-table">
+                        <thead>
+                            <tr><th>المشرف</th><th>اليوم</th><th>إجراء</th></tr>
+                        </thead>
+                        <tbody id="sup-list-body"></tbody>
+                    </table>
+                    <hr>
+                    <h4>إدارة مواقع المناوبة</h4>
+                    <div style="display:flex; gap:5px">
+                        <input type="text" id="new-loc" placeholder="مثال: البوابة">
+                        <button onclick="addLocation()">إضافة موقع</button>
+                    </div>
+                    <div id="loc-list" style="margin-top:10px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="daily-schedule" class="section">
+            <div class="no-print card" style="display:flex; align-items:center; gap:15px; padding:10px">
+                <span>اختر اليوم للعرض:</span>
+                <select id="select-day-view" onchange="renderScheduleTable()" style="width:200px">
+                    <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option>
+                </select>
+                <button onclick="prepareAndPrint('general')">طباعة هذا الجدول</button>
+            </div>
+            <table id="main-table">
+                <thead>
+                    <tr><th>الموقع</th><th>المناوبون</th><th class="no-print">إضافة ملاحظة للمعلم</th><th class="no-print">إجراء</th></tr>
+                </thead>
+                <tbody id="main-table-body"></tbody>
+            </table>
+        </div>
+
+        <div id="admin-notes" class="section">
+            <h3>سجل ملاحظات أداء المناوبين</h3>
+            <div class="no-print" style="margin-bottom:15px">
+                تصفية حسب المعلم: <select id="note-filter" onchange="renderNotes()" style="width:250px"></select>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>المعلم</th><th>الملاحظة</th><th>التاريخ</th><th class="no-print">حذف</th></tr>
+                </thead>
+                <tbody id="notes-list-body"></tbody>
+            </table>
+        </div>
+
+        <div id="sup-interface" class="section">
+            <div class="card" style="background:#e0f2fe">
+                <h2 id="sup-welcome"></h2>
+                <p>يرجى اختيار المعلمين وتوزيعهم على المواقع المحددة:</p>
+                <div id="sup-distribution-area"></div>
+                <button onclick="saveDistribution()" class="btn-success" style="width:100%; padding:15px; font-size:1.1rem; margin-top:20px">تثبيت وحفظ التوزيع اليومي</button>
+            </div>
+        </div>
+
+        <div id="sup-final-view" class="section">
+            <div class="no-print" style="margin-bottom:15px">
+                <button onclick="prepareAndPrint('supervisor')" style="background:var(--dark-blue); padding:12px 25px">طباعة الكشف النهائي</button>
+            </div>
+            <table id="final-print-table">
+                <thead>
+                    <tr><th>موقع المناوبة</th><th>المعلمون المكلفون</th><th>ملاحظات إضافية</th></tr>
+                </thead>
+                <tbody id="final-print-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    فكرة وتصميم / حسن البريكي - 95367258 &copy; 2026
+</footer>
+
+<script>
+    // الرابط الذي طلبته مدمج هنا
+    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbwBQOlsKfGArNqeDi0p3xdrqqhrs1izDykPEQ8SXYqFLgtocitytqVHnUmtGgvY-0qeAw/exec";
+
+    let db = {
+        admin: { user: 'admin', pass: '123' },
+        locations: ['الساحة العامة', 'المقصف المدرسي', 'ممر الحافلات'],
+        supervisors: [], assignments: {}, notes: []
+    };
+
+    let currentUser = null;
+
+    // --- نظام المزامنة السحابية ---
+    async function loadDataFromCloud() {
+        showSyncBanner("جاري تحميل البيانات من السحابة...", "#0ea5e9");
+        try {
+            let res = await fetch(CLOUD_URL);
+            let text = await res.text();
+            let cloudDb = JSON.parse(text);
+            
+            // التأكد من أن البيانات صالحة
+            if(cloudDb && cloudDb.admin) {
+                db = cloudDb;
+                localStorage.setItem('school_duty_sync', JSON.stringify(db)); // نسخة احتياطية محلية
+                showSyncBanner("تم التحديث بنجاح ✔", "#10b981");
+            }
+        } catch(e) {
+            console.log("خطأ في الاتصال، سيتم استخدام النسخة المحلية.");
+            let localDb = JSON.parse(localStorage.getItem('school_duty_sync'));
+            if(localDb) db = localDb;
+            showSyncBanner("أنت تعمل في وضع عدم الاتصال (نسخة محلية)", "#ef4444");
+        }
+        setTimeout(() => document.getElementById('sync-banner').style.display = 'none', 3000);
+    }
+
+    function save() {
+        // الحفظ المحلي السريع
+        localStorage.setItem('school_duty_sync', JSON.stringify(db)); 
+        
+        // المزامنة للسحابة في الخلفية
+        showSyncBanner("جاري الرفع للسحابة...", "#f59e0b");
+        fetch(CLOUD_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(db)
+        }).then(() => {
+            showSyncBanner("تمت المزامنة ✔", "#10b981");
+            setTimeout(() => document.getElementById('sync-banner').style.display = 'none', 2000);
+        }).catch(() => {
+            showSyncBanner("فشل المزامنة، يرجى فحص الإنترنت", "#ef4444");
+        });
+    }
+
+    function showSyncBanner(text, color) {
+        const banner = document.getElementById('sync-banner');
+        banner.innerText = text;
+        banner.style.background = color;
+        banner.style.display = 'block';
+    }
+
+    // جلب البيانات فور فتح الصفحة
+    window.onload = () => {
+        loadDataFromCloud();
+    };
+
+    // --- باقي وظائف النظام ---
+    function handleLogin() {
+        const u = document.getElementById('user-input').value;
+        const p = document.getElementById('pass-input').value;
+
+        if(u === db.admin.user && p === db.admin.pass) {
+            currentUser = { role: 'admin' }; showDashboard();
+        } else {
+            const s = db.supervisors.find(x => x.name === u && x.pass === p);
+            if(s) { currentUser = { role: 'sup', data: s }; showDashboard(); }
+            else alert('عذراً، اسم المستخدم أو كلمة المرور غير صحيحة');
+        }
+    }
+
+    function showDashboard() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        if(currentUser.role === 'admin') {
+            document.getElementById('admin-nav').style.display = 'flex';
+            document.getElementById('sup-nav').style.display = 'none';
+            renderSupList(); renderLocs(); updateNoteFilter();
+        } else {
+            document.getElementById('admin-nav').style.display = 'none';
+            document.getElementById('sup-nav').style.display = 'flex';
+            switchSection('sup-interface');
+            initSupInterface();
+        }
+    }
+
+    function saveSupervisor() {
+        const name = document.getElementById('sup-name').value;
+        const pass = document.getElementById('sup-pass').value;
+        const subject = document.getElementById('sup-subject').value;
+        if(!name || !pass || !subject) return alert('يرجى ملء كافة البيانات');
+
+        const idx = parseInt(document.getElementById('edit-index').value);
+        const newData = {
+            name: name, pass: pass, subject: subject, day: document.getElementById('sup-day').value,
+            teachers: document.getElementById('teacher-paste').value.split(/[,\n]/).map(t => t.trim()).filter(t => t)
+        };
+
+        if(idx === -1) db.supervisors.push(newData);
+        else db.supervisors[idx] = newData;
+
+        save(); resetForm(); renderSupList(); updateNoteFilter();
+    }
+
+    function renderSupList() {
+        document.getElementById('sup-list-body').innerHTML = db.supervisors.map((s, i) => `
+            <tr>
+                <td>${s.name} <br><small>(${s.subject})</small></td>
+                <td>${s.day}</td>
+                <td><button class="btn-edit" onclick="editSup(${i})">تعديل</button> <button class="btn-del" onclick="deleteSup(${i})">حذف</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function editSup(i) {
+        const s = db.supervisors[i];
+        document.getElementById('edit-index').value = i; document.getElementById('sup-name').value = s.name;
+        document.getElementById('sup-pass').value = s.pass; document.getElementById('sup-subject').value = s.subject;
+        document.getElementById('sup-day').value = s.day; document.getElementById('teacher-paste').value = s.teachers.join('\n');
+        document.getElementById('form-title').innerText = "تعديل بيانات المشرف"; document.getElementById('cancel-btn').style.display = "block";
+    }
+
+    function deleteSup(i) {
+        if(confirm('هل أنت متأكد من حذف هذا المشرف؟')) { db.supervisors.splice(i, 1); save(); renderSupList(); }
+    }
+
+    function initSupInterface() {
+        const s = currentUser.data;
+        document.getElementById('sup-welcome').innerText = `مرحباً أ. ${s.name} - توزيع يوم ${s.day}`;
+        const area = document.getElementById('sup-distribution-area');
+        if(db.locations.length === 0) { area.innerHTML = "<p style='color:red'>لم يتم تحديد مواقع مناوبة.</p>"; return; }
+
+        area.innerHTML = db.locations.map(loc => {
+            const saved = db.assignments[`${s.day}-${loc}`] || [];
+            return `
+                <div style="margin-bottom:15px; background:white; padding:15px; border-radius:8px; border-right:5px solid var(--deep-sky)">
+                    <strong>الموقع: ${loc}</strong>
+                    <div class="multi-select-box" style="margin-top:10px">
+                        ${s.teachers.map(t => `<label style="display:block; padding:5px; border-bottom:1px solid #f1f5f9; cursor:pointer"><input type="checkbox" name="${loc}" value="${t}" ${saved.includes(t) ? 'checked' : ''}> ${t}</label>`).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function saveDistribution() {
+        const s = currentUser.data;
+        db.locations.forEach(loc => {
+            db.assignments[`${s.day}-${loc}`] = Array.from(document.querySelectorAll(`input[name="${loc}"]:checked`)).map(el => el.value);
+        });
+        save(); alert('تم تثبيت التوزيع ومزامنته مع باقي الأجهزة.');
+    }
+
+    function renderFinalView() {
+        const s = currentUser.data;
+        document.getElementById('final-print-body').innerHTML = db.locations.map(loc => {
+            const ts = db.assignments[`${s.day}-${loc}`] || [];
+            return `<tr><td>${loc}</td><td>${ts.join(' - ') || '---'}</td><td></td></tr>`;
+        }).join('');
+    }
+
+    function prepareAndPrint(mode) {
+        let day, supData;
+        if(mode === 'general') { day = document.getElementById('select-day-view').value; supData = db.supervisors.find(s => s.day === day); } 
+        else { day = currentUser.data.day; supData = currentUser.data; renderFinalView(); }
+        document.getElementById('p-day').innerText = day; document.getElementById('p-subject').innerText = supData ? supData.subject : 'غير محدد';
+        document.getElementById('p-sup').innerText = supData ? supData.name : 'غير محدد'; document.getElementById('p-date').innerText = new Date().toLocaleDateString('ar-OM');
+        window.print();
+    }
+
+    function renderScheduleTable() {
+        const day = document.getElementById('select-day-view').value;
+        document.getElementById('main-table-body').innerHTML = db.locations.map(loc => {
+            const ts = db.assignments[`${day}-${loc}`] || [];
+            return `
+                <tr>
+                    <td style="font-weight:bold">${loc}</td><td>${ts.join(' - ') || '<span style="color:#94a3b8">لا يوجد مناوبين</span>'}</td>
+                    <td class="no-print"><input type="text" id="n-${day}-${loc}" placeholder="أضف ملاحظة..."></td>
+                    <td class="no-print"><button onclick="addNote('${day}','${loc}')">إضافة</button></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function addNote(day, loc) {
+        const text = document.getElementById(`n-${day}-${loc}`).value;
+        const teachers = db.assignments[`${day}-${loc}`] || [];
+        if(!text || !teachers.length) return alert('تأكد من كتابة الملاحظة ووجود معلمين في الموقع.');
+        teachers.forEach(t => { db.notes.push({ teacher: t, text: text, date: new Date().toLocaleDateString('ar-OM') }); });
+        save(); document.getElementById(`n-${day}-${loc}`).value = ''; alert('تمت إضافة الملاحظة للمزامنة.');
+    }
+
+    function renderNotes() {
+        const f = document.getElementById('note-filter').value;
+        const filtered = f === 'all' ? db.notes : db.notes.filter(n => n.teacher === f);
+        document.getElementById('notes-list-body').innerHTML = filtered.map((n, i) => `
+            <tr><td>${n.teacher}</td><td>${n.text}</td><td>${n.date}</td><td class="no-print"><button class="btn-del" onclick="deleteNote(${i})">حذف</button></td></tr>
+        `).reverse().join('');
+    }
+
+    function deleteNote(i) { db.notes.splice(i, 1); save(); renderNotes(); }
+
+    function updateNoteFilter() {
+        let ts = []; db.supervisors.forEach(s => ts = ts.concat(s.teachers));
+        document.getElementById('note-filter').innerHTML = '<option value="all">الكل</option>' + [...new Set(ts)].map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function switchSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(id));
+        if(btn) btn.classList.add('active');
+        if(id === 'daily-schedule') renderScheduleTable();
+        if(id === 'admin-notes') renderNotes();
+        if(id === 'sup-final-view') renderFinalView();
+    }
+
+    function logout() { if(confirm('هل تريد تسجيل الخروج؟')) location.reload(); }
+    
+    function resetForm() { 
+        document.getElementById('edit-index').value = "-1"; document.getElementById('sup-name').value = ""; 
+        document.getElementById('sup-pass').value = ""; document.getElementById('teacher-paste').value = ""; 
+        document.getElementById('form-title').innerText = "إضافة/تعديل مشرف"; document.getElementById('cancel-btn').style.display = "none"; 
+    }
+
+    function addLocation() { 
+        const l = document.getElementById('new-loc').value.trim(); 
+        if(l && !db.locations.includes(l)){ db.locations.push(l); document.getElementById('new-loc').value=''; save(); renderLocs(); } 
+    }
+
+    function renderLocs() { 
+        document.getElementById('loc-list').innerHTML = db.locations.map((l,i) => `<span class="loc-tag">${l} <button onclick="deleteLoc(${i})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold">×</button></span>`).join(''); 
+    }
+    
+    function deleteLoc(i) { if(confirm('متأكد من الحذف؟')) { db.locations.splice(i, 1); save(); renderLocs(); } }
+</script>
+
+</body>
+</html>
