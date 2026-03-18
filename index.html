@@ -8,6 +8,7 @@
         :root {
             --sky-bg: #f0f9ff; --deep-sky: #0ea5e9; --dark-blue: #0c4a6e;
             --white: #ffffff; --danger: #ef4444; --shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --warning: #f59e0b; --whatsapp: #25D366; --sent: #64748b;
         }
 
         body {
@@ -16,7 +17,7 @@
             margin: 0; min-height: 100vh; display: flex; flex-direction: column; color: #334155;
         }
 
-        header { background: var(--dark-blue); color: white; padding: 20px; text-align: center; box-shadow: var(--shadow); }
+        header { background: var(--dark-blue); color: white; padding: 20px; text-align: center; box-shadow: var(--shadow); position: relative;}
         footer { background: var(--dark-blue); color: #cbd5e1; text-align: center; padding: 15px; margin-top: auto; }
 
         .container { max-width: 1200px; margin: 20px auto; width: 95%; background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 15px; box-shadow: var(--shadow); }
@@ -24,6 +25,7 @@
         #login-screen { max-width: 400px; margin: 50px auto; padding: 30px; background: white; border-radius: 15px; text-align: center; box-shadow: var(--shadow); }
         
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        input:disabled { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
         
         button { padding: 10px 20px; background: var(--deep-sky); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 5px; }
         button:hover { background: var(--dark-blue); }
@@ -41,37 +43,62 @@
         th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; }
         th { background: #f1f5f9; color: var(--dark-blue); }
 
-        .print-header { display: none; text-align: center; border: 2px solid #000; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
-        .print-header h2 { margin: 0; font-size: 24pt; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: right; font-weight: bold; }
+        .print-header { display: none; text-align: center; border: 2px solid var(--dark-blue); padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .print-header h2 { margin: 0; font-size: 24pt; color: var(--dark-blue); }
+        .print-header h3 { margin: 10px 0; font-size: 18pt; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; text-align: right; font-weight: bold; font-size: 1.1rem;}
 
         @media print {
             .no-print, .tab-btn, button, header, footer, #sync-banner { display: none !important; }
-            .print-header { display: block; }
-            body { background: white; }
-            .container { box-shadow: none; width: 100%; margin: 0; padding: 0; border:none; }
-            table { width: 100%; border: 1px solid #000; }
-            th { background: #eee !important; color: black; }
+            .print-header { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .container { box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border:none !important; background: transparent !important;}
+            table { width: 100% !important; border: 2px solid #000 !important; border-collapse: collapse !important; margin-top: 20px !important;}
+            th, td { border: 1px solid #000 !important; padding: 12px !important; color: black !important; text-align: center !important; font-size: 14pt !important; }
+            th { background: #e2e8f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         
         .multi-select-box { border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; background: white; }
         .card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .loc-tag { background:#e2e8f0; padding:5px 10px; margin:4px; display:inline-block; border-radius:15px; font-size:0.9rem; }
         
-        /* شريط المزامنة */
-        #sync-banner {
-            position: fixed; bottom: 0; left: 0; right: 0; background: #10b981; color: white; text-align: center; padding: 8px; font-size: 0.9rem; font-weight: bold; display: none; z-index: 1000;
-        }
+        #sync-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #10b981; color: white; text-align: center; padding: 8px; font-size: 0.9rem; font-weight: bold; display: none; z-index: 1000; }
+        .week-badge { position: absolute; top: 15px; left: 15px; background: var(--warning); color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        
+        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 10px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;}
+        .date-grid label { font-weight: bold; color: var(--dark-blue); grid-column: span 2;}
+        
+        .btn-pin { background: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .btn-pin:hover { background: #d97706; }
+        
+        .msg-btn { padding: 4px 8px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; font-weight: bold; display: inline-block; cursor:pointer; color: white; transition: 0.3s;}
+        .wa-btn { background: var(--whatsapp); border: 1px solid #1da851; }
+        .wa-btn:hover { background: #1da851; }
+        .sms-btn { background: var(--deep-sky); border: 1px solid #0284c7; }
+        .sms-btn:hover { background: #0284c7; }
+        .sent-btn { background: var(--sent) !important; border: 1px solid #475569 !important; color: #fff !important;}
+
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1 style="margin:0">مدرسة سعيد بن سلطان</h1>
-    <p style="margin:5px 0 0 0">نظام المناوبة المدرسية (متصل بالسحابة)</p>
+    <p style="margin:5px 0 0 0">نظام المناوبة المدرسية المجدول</p>
+    <div id="active-week-badge" class="week-badge" style="display:none;">الأسبوع النشط: 1</div>
 </header>
 
 <div id="sync-banner">جاري مزامنة البيانات...</div>
+
+<div id="custom-alert" class="no-print" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; backdrop-filter: blur(3px);">
+    <div style="background:white; padding:30px; border-radius:15px; text-align:center; max-width:80%; width:400px; box-shadow:0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.3s ease-out;">
+        <div style="font-size:55px; margin-bottom:15px;">✅</div>
+        <h3 style="color:var(--dark-blue); margin-top:0; font-size:1.4rem;">تم إنجاز المهمة!</h3>
+        <p id="custom-alert-msg" style="color:#475569; line-height:1.6; font-size:1.1rem; font-weight:bold;"></p>
+        <button onclick="closeCustomAlert()" style="background:var(--danger); width:100%; margin-top:20px; font-size:1.1rem; padding:12px; color:white; border:none; border-radius:8px; cursor:pointer;">إغلاق</button>
+    </div>
+</div>
 
 <div class="container">
     <div id="login-screen">
@@ -85,33 +112,70 @@
         <div class="no-print">
             <div id="admin-nav" class="tabs">
                 <button class="tab-btn active" onclick="switchSection('admin-config')">إعدادات النظام</button>
-                <button class="tab-btn" onclick="switchSection('daily-schedule')">عرض الجداول</button>
+                <button class="tab-btn" onclick="switchSection('daily-schedule')">عرض الجداول المجدولة</button>
                 <button class="tab-btn" onclick="switchSection('admin-notes')">الملاحظات</button>
                 <button class="btn-del" onclick="logout()" style="margin-right:auto">خروج</button>
             </div>
             <div id="sup-nav" class="tabs" style="display:none">
-                <button class="tab-btn active" onclick="switchSection('sup-interface')">توزيع المناوبين</button>
-                <button class="tab-btn" onclick="switchSection('sup-final-view')">معاينة الطباعة</button>
+                <button class="tab-btn active" onclick="switchSection('sup-interface')">جدولة التوزيع</button>
+                <button class="tab-btn" onclick="switchSection('sup-final-view')">معاينة وإرسال الرسائل</button>
                 <button class="btn-del" onclick="logout()" style="margin-right:auto">خروج</button>
             </div>
         </div>
 
         <div class="print-header">
             <h2>مدرسة سعيد بن سلطان</h2>
-            <h3 id="p-title">كشف توزيع المناوبة اليومية</h3>
-            <hr>
+            <h3 id="p-title">كشف توزيع المناوبة المدرسية</h3>
+            <hr style="border-color:var(--dark-blue);">
             <div class="info-grid">
-                <div>اليوم: <span id="p-day"></span></div>
-                <div>المادة/القسم: <span id="p-subject"></span></div>
-                <div>المشرف المسؤول: <span id="p-sup"></span></div>
-                <div>تاريخ اليوم: <span id="p-date"></span></div>
+                <div>الأسبوع: <span id="p-week" style="color:var(--dark-blue);"></span></div>
+                <div>اليوم: <span id="p-day" style="color:var(--dark-blue);"></span></div>
+                <div>تاريخ المناوبة: <span id="p-duty-date" style="color:var(--danger);"></span></div>
+                <div>المشرف المسؤول: <span id="p-sup" style="color:var(--dark-blue);"></span></div>
+                <div style="grid-column: span 2;">المادة/القسم: <span id="p-subject" style="color:var(--dark-blue);"></span></div>
             </div>
         </div>
 
         <div id="admin-config" class="section active">
+            <div class="card" style="border-right: 5px solid var(--warning);">
+                <h4 style="margin-top:0; color:var(--dark-blue);">تواريخ الأسابيع (تثبيت التواريخ والتفعيل التلقائي)</h4>
+                <p style="font-size:0.9rem; color:#64748b; margin-bottom:10px;">يتم قفل التواريخ المحفوظة تلقائياً لمنع التعديل بالخطأ، وتفتح من جديد عند انتهاء فترة الأسبوع لتتمكن من وضع تواريخ الشهر الجديد.</p>
+                
+                <div class="date-grid">
+                    <label>الأسبوع الأول</label>
+                    <div>من (الأحد): <input type="date" id="w1-start"></div><div>إلى (الخميس): <input type="date" id="w1-end"></div>
+                </div>
+                <div class="date-grid">
+                    <label>الأسبوع الثاني</label>
+                    <div>من (الأحد): <input type="date" id="w2-start"></div><div>إلى (الخميس): <input type="date" id="w2-end"></div>
+                </div>
+                <div class="date-grid">
+                    <label>الأسبوع الثالث</label>
+                    <div>من (الأحد): <input type="date" id="w3-start"></div><div>إلى (الخميس): <input type="date" id="w3-end"></div>
+                </div>
+                <div class="date-grid">
+                    <label>الأسبوع الرابع</label>
+                    <div>من (الأحد): <input type="date" id="w4-start"></div><div>إلى (الخميس): <input type="date" id="w4-end"></div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="saveWeekDates()" style="flex:2; background:var(--dark-blue); color:white;">حفظ وتثبيت التواريخ</button>
+                    <button onclick="unlockDates()" class="no-print" style="flex:1; background:var(--danger); color:white;" title="استخدمه لتصحيح الأخطاء الإملائية في التواريخ">فك القفل للتعديل</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-right: 5px solid var(--danger);">
+                <h4 style="margin-top:0; color:var(--dark-blue);">بيانات دخول الإدارة (الأدمن)</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><label style="font-weight:bold; font-size:0.9rem; display:block; margin-bottom:5px;">اسم المستخدم:</label><input type="text" id="admin-new-user" placeholder="اسم المستخدم الجديد"></div>
+                    <div><label style="font-weight:bold; font-size:0.9rem; display:block; margin-bottom:5px;">كلمة المرور:</label><input type="text" id="admin-new-pass" placeholder="كلمة المرور الجديدة"></div>
+                </div>
+                <button onclick="saveAdminAuth()" style="width:100%; background:var(--danger); color:white; margin-top:10px;">حفظ وتحديث بيانات الإدارة</button>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
                 <div class="card">
-                    <h4 id="form-title" style="margin-top:0">إضافة/تعديل مشرف</h4>
+                    <h4 id="form-title" style="margin-top:0">إضافة/تعديل مشرف ومناوبين</h4>
                     <input type="hidden" id="edit-index" value="-1">
                     <input type="text" id="sup-name" placeholder="اسم المشرف">
                     <input type="text" id="sup-pass" placeholder="كلمة المرور">
@@ -123,9 +187,9 @@
                     <select id="sup-day">
                         <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option>
                     </select>
-                    <textarea id="teacher-paste" rows="4" placeholder="أدخل أسماء المعلمين (اسم في كل سطر)..."></textarea>
-                    <button onclick="saveSupervisor()" id="save-btn" style="width:100%">حفظ بيانات المشرف</button>
-                    <button onclick="resetForm()" class="btn-del" style="width:100%; display:none; background:#64748b" id="cancel-btn">إلغاء التعديل</button>
+                    <textarea id="teacher-paste" rows="6" placeholder="أدخل أسماء المعلمين (اسم في كل سطر)&#10;يمكنك لصق الأسماء والأرقام مباشرة من الإكسل (عمودين)&#10;أو يدوياً بكتابة: أحمد - 91234567"></textarea>
+                    <button onclick="saveSupervisor()" id="save-btn" style="width:100%">حفظ وتحديث بيانات المشرف</button>
+                    <button onclick="resetForm()" id="cancel-btn" class="btn-del" style="width:100%; display:none; background:#64748b; margin-top:5px;">إلغاء التعديل</button>
                 </div>
                 <div>
                     <h4 style="margin-top:0">المشرفون المسجلون</h4>
@@ -139,7 +203,7 @@
                     <h4>إدارة مواقع المناوبة</h4>
                     <div style="display:flex; gap:5px">
                         <input type="text" id="new-loc" placeholder="مثال: البوابة">
-                        <button onclick="addLocation()">إضافة موقع</button>
+                        <button onclick="addLocation()">إضافة وتحديث موقع</button>
                     </div>
                     <div id="loc-list" style="margin-top:10px"></div>
                 </div>
@@ -147,16 +211,21 @@
         </div>
 
         <div id="daily-schedule" class="section">
-            <div class="no-print card" style="display:flex; align-items:center; gap:15px; padding:10px">
-                <span>اختر اليوم للعرض:</span>
-                <select id="select-day-view" onchange="renderScheduleTable()" style="width:200px">
+            <div class="no-print card" style="display:flex; align-items:center; gap:15px; padding:10px; flex-wrap:wrap;">
+                <span>اختر الأسبوع:</span>
+                <select id="admin-week-select" onchange="renderScheduleTable()" style="width:150px">
+                    <option value="1">الأسبوع الأول</option><option value="2">الأسبوع الثاني</option>
+                    <option value="3">الأسبوع الثالث</option><option value="4">الأسبوع الرابع</option>
+                </select>
+                <span>اليوم:</span>
+                <select id="select-day-view" onchange="renderScheduleTable()" style="width:150px">
                     <option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option>
                 </select>
-                <button onclick="prepareAndPrint('general')">طباعة هذا الجدول</button>
+                <button onclick="prepareAndPrint('general')" style="margin-right:auto;">طباعة هذا الجدول</button>
             </div>
             <table id="main-table">
                 <thead>
-                    <tr><th>الموقع</th><th>المناوبون</th><th class="no-print">إضافة ملاحظة للمعلم</th><th class="no-print">إجراء</th></tr>
+                    <tr><th>الموقع</th><th>المناوبون المجدولون</th><th class="no-print">إضافة ملاحظة للمعلم</th><th class="no-print">إجراء</th></tr>
                 </thead>
                 <tbody id="main-table-body"></tbody>
             </table>
@@ -177,20 +246,39 @@
 
         <div id="sup-interface" class="section">
             <div class="card" style="background:#e0f2fe">
-                <h2 id="sup-welcome"></h2>
-                <p>يرجى اختيار المعلمين وتوزيعهم على المواقع المحددة:</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <h2 id="sup-welcome" style="margin:0;"></h2>
+                    <select id="sup-week-select" onchange="initSupInterface()" style="width:200px; font-weight:bold; color:var(--dark-blue);">
+                        <option value="1">جدولة الأسبوع الأول</option>
+                        <option value="2">جدولة الأسبوع الثاني</option>
+                        <option value="3">جدولة الأسبوع الثالث</option>
+                        <option value="4">جدولة الأسبوع الرابع</option>
+                    </select>
+                </div>
+                <hr style="border-color:#bae6fd; margin:15px 0;">
+                <p>قم باختيار المعلمين للمواقع. (ملاحظة: يتم حفظ اختياراتك لحظياً ✔). لنسخ معلمين في موقع لجميع الأسابيع، اضغط "📌 تثبيت للكل".</p>
                 <div id="sup-distribution-area"></div>
-                <button onclick="saveDistribution()" class="btn-success" style="width:100%; padding:15px; font-size:1.1rem; margin-top:20px">تثبيت وحفظ التوزيع اليومي</button>
+                <button onclick="saveDistributionAndSync()" class="btn-success" style="width:100%; padding:15px; font-size:1.1rem; margin-top:20px">اعتماد التوزيع النهائي ورفعه للإدارة</button>
+                <button onclick="copyToAllWeeks()" style="width:100%; padding:12px; font-size:1rem; margin-top:10px; background:var(--dark-blue); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">نسخ هذا التوزيع بالكامل لجميع الأسابيع</button>
             </div>
         </div>
 
         <div id="sup-final-view" class="section">
-            <div class="no-print" style="margin-bottom:15px">
-                <button onclick="prepareAndPrint('supervisor')" style="background:var(--dark-blue); padding:12px 25px">طباعة الكشف النهائي</button>
+            <div class="no-print card" style="display:flex; align-items:center; gap:15px; margin-bottom:15px; flex-wrap:wrap;">
+                <span>اختر الأسبوع للطباعة وإرسال الرسائل:</span>
+                <select id="print-week-select" onchange="renderFinalView()" style="width:200px">
+                    <option value="1">الأسبوع الأول</option><option value="2">الأسبوع الثاني</option>
+                    <option value="3">الأسبوع الثالث</option><option value="4">الأسبوع الرابع</option>
+                </select>
+                <button onclick="prepareAndPrint('supervisor')" style="background:var(--dark-blue); margin-right:auto;">معاينة وطباعة الكشف</button>
             </div>
             <table id="final-print-table">
                 <thead>
-                    <tr><th>موقع المناوبة</th><th>المعلمون المكلفون</th><th>ملاحظات إضافية</th></tr>
+                    <tr>
+                        <th style="width: 25%;">موقع المناوبة</th>
+                        <th style="width: 55%;">المعلمون المكلفون <span class="no-print">(وخيارات المراسلة)</span></th>
+                        <th style="width: 20%;">ملاحظات إضافية</th>
+                    </tr>
                 </thead>
                 <tbody id="final-print-body"></tbody>
             </table>
@@ -200,218 +288,475 @@
 </div>
 
 <footer>
-    فكرة وتصميم / حسن البريكي - 95367258 &copy; 2026
+    تصميم وتطوير / حسن البريكي - 95367258 &copy; 2026
 </footer>
 
 <script>
-    // الرابط الذي طلبته مدمج هنا
     const CLOUD_URL = "https://script.google.com/macros/s/AKfycbwBQOlsKfGArNqeDi0p3xdrqqhrs1izDykPEQ8SXYqFLgtocitytqVHnUmtGgvY-0qeAw/exec";
 
     let db = {
         admin: { user: 'admin', pass: '123' },
         locations: ['الساحة العامة', 'المقصف المدرسي', 'ممر الحافلات'],
-        supervisors: [], assignments: {}, notes: []
+        supervisors: [], assignments: { 1: {}, 2: {}, 3: {}, 4: {} }, notes: [], activeWeek: 1,
+        weekDates: { 1: {start: "", end: ""}, 2: {start: "", end: ""}, 3: {start: "", end: ""}, 4: {start: "", end: ""} },
+        teacherPhones: {}, msgStatus: {}, lastUpdated: 0
     };
 
     let currentUser = null;
+    let autoSaveTimer = null; 
 
-    // --- نظام المزامنة السحابية ---
-    async function loadDataFromCloud() {
-        showSyncBanner("جاري تحميل البيانات من السحابة...", "#0ea5e9");
+    function showCustomAlert(msg) {
+        document.getElementById('custom-alert-msg').innerText = msg;
+        document.getElementById('custom-alert').style.display = 'flex';
+    }
+
+    function closeCustomAlert() { document.getElementById('custom-alert').style.display = 'none'; }
+
+    // --- نظام المزامنة والذاكرة المحسن ---
+    setInterval(silentAutoSync, 60000); 
+
+    async function silentAutoSync() {
+        if (!navigator.onLine || !currentUser) return;
         try {
             let res = await fetch(CLOUD_URL);
             let text = await res.text();
             let cloudDb = JSON.parse(text);
             
-            // التأكد من أن البيانات صالحة
             if(cloudDb && cloudDb.admin) {
-                db = cloudDb;
-                localStorage.setItem('school_duty_sync', JSON.stringify(db)); // نسخة احتياطية محلية
+                cloudDb = migrateDb(cloudDb);
+                let cloudTime = cloudDb.lastUpdated || 0;
+                let localTime = db.lastUpdated || 0;
+
+                if (cloudTime > localTime) {
+                    db = cloudDb;
+                    saveLocalOnly();
+                    refreshCurrentView();
+                    showSyncBanner("⬇️ تم تحديث البيانات تلقائياً من السحابة", "#10b981");
+                    setTimeout(() => document.getElementById('sync-banner').style.display = 'none', 3000);
+                } else if (localTime > cloudTime) {
+                    fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(db) });
+                }
+            }
+        } catch(e) {}
+    }
+
+    function refreshCurrentView() {
+        if(currentUser.role === 'admin') {
+            renderSupList(); renderLocs(); updateNoteFilter(); populateDateInputs();
+        } else {
+            initSupInterface();
+        }
+        if(document.getElementById('daily-schedule').classList.contains('active')) renderScheduleTable();
+        if(document.getElementById('admin-notes').classList.contains('active')) renderNotes();
+        if(document.getElementById('sup-final-view').classList.contains('active')) renderFinalView();
+        autoSetActiveWeek();
+    }
+
+    async function loadDataFromCloud() {
+        showSyncBanner("جاري مزامنة البيانات...", "#0ea5e9");
+        let localText = localStorage.getItem('school_duty_sync');
+        let localDb = localText ? migrateDb(JSON.parse(localText)) : null;
+
+        try {
+            let res = await fetch(CLOUD_URL);
+            let text = await res.text();
+            let cloudDb = JSON.parse(text);
+            
+            if(cloudDb && cloudDb.admin) {
+                cloudDb = migrateDb(cloudDb);
+                let cloudTime = cloudDb.lastUpdated || 0;
+                let localTime = localDb ? (localDb.lastUpdated || 0) : 0;
+
+                if (localDb && localTime > cloudTime) {
+                    db = localDb;
+                    fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(db) });
+                } else {
+                    db = cloudDb;
+                    saveLocalOnly();
+                }
                 showSyncBanner("تم التحديث بنجاح ✔", "#10b981");
             }
         } catch(e) {
-            console.log("خطأ في الاتصال، سيتم استخدام النسخة المحلية.");
-            let localDb = JSON.parse(localStorage.getItem('school_duty_sync'));
             if(localDb) db = localDb;
-            showSyncBanner("أنت تعمل في وضع عدم الاتصال (نسخة محلية)", "#ef4444");
+            showSyncBanner("تعمل الآن في وضع عدم الاتصال (نسخة محلية)", "#ef4444");
         }
+        
+        if(currentUser && currentUser.role === 'admin') {
+            populateDateInputs(); document.getElementById('admin-new-user').value = db.admin.user; document.getElementById('admin-new-pass').value = db.admin.pass;
+        } 
+        autoSetActiveWeek();
         setTimeout(() => document.getElementById('sync-banner').style.display = 'none', 3000);
     }
 
-    function save() {
-        // الحفظ المحلي السريع
-        localStorage.setItem('school_duty_sync', JSON.stringify(db)); 
-        
-        // المزامنة للسحابة في الخلفية
+    function migrateDb(database) {
+        if (!database.assignments[1]) { let oldAssigns = database.assignments || {}; database.assignments = { 1: oldAssigns, 2: {}, 3: {}, 4: {} }; }
+        if (!database.activeWeek) database.activeWeek = 1;
+        if (!database.weekDates) database.weekDates = { 1: {start: "", end: ""}, 2: {start: "", end: ""}, 3: {start: "", end: ""}, 4: {start: "", end: ""} };
+        if (!database.teacherPhones) database.teacherPhones = {};
+        if (!database.msgStatus) database.msgStatus = {};
+        if (!database.lastUpdated) database.lastUpdated = 0;
+        return cleanDbForStorage(database);
+    }
+
+    // تنظيف الذاكرة لزيادة المساحة الاستيعابية
+    function cleanDbForStorage(database) {
+        const keys = Object.keys(database.msgStatus);
+        if(keys.length > 300) { database.msgStatus = {}; } // تنظيف حالة الرسائل القديمة
+        return database;
+    }
+
+    function saveLocalOnly() {
+        db.lastUpdated = new Date().getTime(); 
+        db = cleanDbForStorage(db);
+        try {
+            localStorage.setItem('school_duty_sync', JSON.stringify(db)); 
+        } catch(e) {
+            alert("تنبيه: المساحة المحلية ممتلئة. الاعتماد سيكون على الحفظ السحابي فقط.");
+        }
+    }
+
+    function saveAndSync() {
+        saveLocalOnly();
         showSyncBanner("جاري الرفع للسحابة...", "#f59e0b");
-        fetch(CLOUD_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(db)
-        }).then(() => {
-            showSyncBanner("تمت المزامنة ✔", "#10b981");
+        fetch(CLOUD_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(db) }).then(() => {
+            showSyncBanner("تمت المزامنة وتأمين البيانات ✔", "#10b981");
             setTimeout(() => document.getElementById('sync-banner').style.display = 'none', 2000);
-        }).catch(() => {
-            showSyncBanner("فشل المزامنة، يرجى فحص الإنترنت", "#ef4444");
-        });
+        }).catch(() => { showSyncBanner("فشل المزامنة، يرجى فحص الإنترنت", "#ef4444"); });
+        
+        refreshCurrentView(); // تحديث فوري للشاشة بعد كل حفظ
+    }
+
+    function triggerAutoSave() {
+        clearTimeout(autoSaveTimer);
+        showSyncBanner("يتم الحفظ التلقائي...", "#f59e0b");
+        autoSaveTimer = setTimeout(() => { saveAndSync(); }, 1500);
     }
 
     function showSyncBanner(text, color) {
-        const banner = document.getElementById('sync-banner');
-        banner.innerText = text;
-        banner.style.background = color;
-        banner.style.display = 'block';
+        const banner = document.getElementById('sync-banner'); banner.innerText = text; banner.style.background = color; banner.style.display = 'block';
     }
 
-    // جلب البيانات فور فتح الصفحة
-    window.onload = () => {
-        loadDataFromCloud();
-    };
+    window.onload = () => { loadDataFromCloud(); };
 
-    // --- باقي وظائف النظام ---
+    // --- تحديث الإدارة وتواريخ الأسابيع ---
+    function saveAdminAuth() {
+        const newUser = document.getElementById('admin-new-user').value.trim(); const newPass = document.getElementById('admin-new-pass').value.trim();
+        if(!newUser || !newPass) return alert('يرجى إدخال اسم المستخدم وكلمة المرور.');
+        db.admin.user = newUser; db.admin.pass = newPass; saveAndSync();
+        showCustomAlert('تم تحديث بيانات الإدارة واعتمادها بنجاح.');
+    }
+
+    function saveWeekDates() {
+        for(let i=1; i<=4; i++) {
+            db.weekDates[i].start = document.getElementById(`w${i}-start`).value; db.weekDates[i].end = document.getElementById(`w${i}-end`).value;
+        }
+        saveAndSync(); 
+        showCustomAlert('تم حفظ التواريخ وتثبيتها وتفعيلها بنجاح.');
+    }
+
+    function unlockDates() {
+        if(confirm('هل أنت متأكد من رغبتك في فتح قفل التواريخ للتعديل الاستثنائي؟')) {
+            for(let i=1; i<=4; i++) {
+                const elStart = document.getElementById(`w${i}-start`); const elEnd = document.getElementById(`w${i}-end`);
+                if(elStart && elEnd) { elStart.disabled = false; elEnd.disabled = false; }
+            }
+        }
+    }
+
+    function populateDateInputs() {
+        const today = new Date(); today.setHours(0,0,0,0);
+        for(let i=1; i<=4; i++) {
+            if(db.weekDates && db.weekDates[i]) {
+                const elStart = document.getElementById(`w${i}-start`); const elEnd = document.getElementById(`w${i}-end`);
+                if(elStart && elEnd) {
+                    elStart.value = db.weekDates[i].start || ""; elEnd.value = db.weekDates[i].end || "";
+                    if(db.weekDates[i].end) {
+                        const endDate = new Date(db.weekDates[i].end); endDate.setHours(23,59,59,999);
+                        if(today <= endDate) { elStart.disabled = true; elEnd.disabled = true; } 
+                        else { elStart.disabled = false; elEnd.disabled = false; }
+                    } else { elStart.disabled = false; elEnd.disabled = false; }
+                }
+            }
+        }
+    }
+
+    function autoSetActiveWeek() {
+        const today = new Date(); today.setHours(0,0,0,0); let foundWeek = null;
+        for(let i=1; i<=4; i++) {
+            if(db.weekDates && db.weekDates[i] && db.weekDates[i].start && db.weekDates[i].end) {
+                const start = new Date(db.weekDates[i].start); start.setHours(0,0,0,0);
+                const end = new Date(db.weekDates[i].end); end.setHours(23,59,59,999);
+                if(today >= start && today <= end) { foundWeek = i; break; }
+            }
+        }
+        if(foundWeek) { db.activeWeek = foundWeek; }
+        updateUIWithActiveWeek();
+    }
+
+    function updateUIWithActiveWeek() {
+        let dateText = "";
+        if(db.weekDates && db.weekDates[db.activeWeek] && db.weekDates[db.activeWeek].start) {
+            dateText = ` (الفترة: ${db.weekDates[db.activeWeek].start} إلى ${db.weekDates[db.activeWeek].end})`;
+        }
+        const badge = document.getElementById('active-week-badge');
+        if(badge) { badge.innerText = `الأسبوع النشط حالياً: ${db.activeWeek} ${dateText}`; badge.style.display = 'block'; }
+        
+        if(document.getElementById('admin-week-select')) document.getElementById('admin-week-select').value = db.activeWeek;
+        if(document.getElementById('sup-week-select')) document.getElementById('sup-week-select').value = db.activeWeek;
+        if(document.getElementById('print-week-select')) document.getElementById('print-week-select').value = db.activeWeek;
+    }
+
+    function getDutyDateString(weekNum, dayName) {
+        if (!db.weekDates || !db.weekDates[weekNum] || !db.weekDates[weekNum].start) return 'التاريخ غير مسجل';
+        const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس']; const dayIndex = days.indexOf(dayName);
+        if (dayIndex === -1) return 'غير محدد';
+        let parts = db.weekDates[weekNum].start.split('-'); if(parts.length !== 3) return 'غير محدد';
+        let startDate = new Date(parts[0], parts[1]-1, parts[2]); startDate.setDate(startDate.getDate() + dayIndex);
+        return startDate.toLocaleDateString('ar-OM', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function getValidTeachers(week, day, loc) {
+        let allValidTeachers = [];
+        db.supervisors.forEach(sup => allValidTeachers.push(...sup.teachers));
+        let rawList = db.assignments[week][`${day}-${loc}`] || [];
+        return [...new Set(rawList)].filter(t => allValidTeachers.includes(t));
+    }
+
+    // --- الدخول والواجهات ---
     function handleLogin() {
-        const u = document.getElementById('user-input').value;
-        const p = document.getElementById('pass-input').value;
-
-        if(u === db.admin.user && p === db.admin.pass) {
-            currentUser = { role: 'admin' }; showDashboard();
-        } else {
+        const u = document.getElementById('user-input').value; const p = document.getElementById('pass-input').value;
+        if(u === db.admin.user && p === db.admin.pass) { currentUser = { role: 'admin' }; showDashboard(); } 
+        else {
             const s = db.supervisors.find(x => x.name === u && x.pass === p);
-            if(s) { currentUser = { role: 'sup', data: s }; showDashboard(); }
-            else alert('عذراً، اسم المستخدم أو كلمة المرور غير صحيحة');
+            if(s) { currentUser = { role: 'sup', data: s }; showDashboard(); } else alert('عذراً، اسم المستخدم أو كلمة المرور غير صحيحة');
         }
     }
 
     function showDashboard() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block';
         if(currentUser.role === 'admin') {
-            document.getElementById('admin-nav').style.display = 'flex';
-            document.getElementById('sup-nav').style.display = 'none';
-            renderSupList(); renderLocs(); updateNoteFilter();
+            document.getElementById('admin-nav').style.display = 'flex'; document.getElementById('sup-nav').style.display = 'none';
+            document.getElementById('admin-new-user').value = db.admin.user; document.getElementById('admin-new-pass').value = db.admin.pass;
+            renderSupList(); renderLocs(); updateNoteFilter(); populateDateInputs();
         } else {
-            document.getElementById('admin-nav').style.display = 'none';
-            document.getElementById('sup-nav').style.display = 'flex';
-            switchSection('sup-interface');
-            initSupInterface();
+            document.getElementById('admin-nav').style.display = 'none'; document.getElementById('sup-nav').style.display = 'flex';
+            switchSection('sup-interface'); initSupInterface();
         }
+        autoSetActiveWeek(); 
     }
 
+    // --- إدارة المشرفين ---
     function saveSupervisor() {
-        const name = document.getElementById('sup-name').value;
-        const pass = document.getElementById('sup-pass').value;
-        const subject = document.getElementById('sup-subject').value;
-        if(!name || !pass || !subject) return alert('يرجى ملء كافة البيانات');
+        const name = document.getElementById('sup-name').value; const pass = document.getElementById('sup-pass').value; const subject = document.getElementById('sup-subject').value;
+        if(!name || !pass || !subject) return alert('يرجى ملء كافة البيانات الأساسية');
+        
+        if(!db.teacherPhones) db.teacherPhones = {};
+        const lines = document.getElementById('teacher-paste').value.split('\n');
+        let teacherNames = [];
+        
+        lines.forEach(line => {
+            let trimmed = line.trim(); if(!trimmed) return;
+            let parts = trimmed.split(/[\t\-,:]+/); // فصل بأكثر من طريقة
+            let tName = parts[0].trim();
+            if(tName) {
+                teacherNames.push(tName);
+                if(parts.length > 1) {
+                    let phoneStr = parts.slice(1).join('').replace(/\D/g, ''); 
+                    if(phoneStr) db.teacherPhones[tName] = phoneStr;
+                }
+            }
+        });
 
         const idx = parseInt(document.getElementById('edit-index').value);
-        const newData = {
-            name: name, pass: pass, subject: subject, day: document.getElementById('sup-day').value,
-            teachers: document.getElementById('teacher-paste').value.split(/[,\n]/).map(t => t.trim()).filter(t => t)
-        };
-
-        if(idx === -1) db.supervisors.push(newData);
-        else db.supervisors[idx] = newData;
-
-        save(); resetForm(); renderSupList(); updateNoteFilter();
+        const newData = { name: name, pass: pass, subject: subject, day: document.getElementById('sup-day').value, teachers: teacherNames };
+        
+        if(idx === -1) { db.supervisors.push(newData); showCustomAlert('تم إضافة وتحديث بيانات المشرف والمناوبين بنجاح.'); } 
+        else { db.supervisors[idx] = newData; showCustomAlert('تم حفظ وتحديث بيانات المشرف والمناوبين بنجاح.'); }
+        
+        saveAndSync(); resetForm();
     }
 
     function renderSupList() {
-        document.getElementById('sup-list-body').innerHTML = db.supervisors.map((s, i) => `
-            <tr>
-                <td>${s.name} <br><small>(${s.subject})</small></td>
-                <td>${s.day}</td>
-                <td><button class="btn-edit" onclick="editSup(${i})">تعديل</button> <button class="btn-del" onclick="deleteSup(${i})">حذف</button></td>
-            </tr>
-        `).join('');
+        document.getElementById('sup-list-body').innerHTML = db.supervisors.map((s, i) => `<tr><td>${s.name} <br><small>(${s.subject})</small></td><td>${s.day}</td><td><button class="btn-edit" onclick="editSup(${i})">تعديل</button> <button class="btn-del" onclick="deleteSup(${i})">حذف</button></td></tr>`).join('');
     }
 
     function editSup(i) {
-        const s = db.supervisors[i];
-        document.getElementById('edit-index').value = i; document.getElementById('sup-name').value = s.name;
-        document.getElementById('sup-pass').value = s.pass; document.getElementById('sup-subject').value = s.subject;
-        document.getElementById('sup-day').value = s.day; document.getElementById('teacher-paste').value = s.teachers.join('\n');
-        document.getElementById('form-title').innerText = "تعديل بيانات المشرف"; document.getElementById('cancel-btn').style.display = "block";
+        const s = db.supervisors[i]; document.getElementById('edit-index').value = i; document.getElementById('sup-name').value = s.name;
+        document.getElementById('sup-pass').value = s.pass; document.getElementById('sup-subject').value = s.subject; document.getElementById('sup-day').value = s.day; 
+        
+        document.getElementById('teacher-paste').value = s.teachers.map(t => {
+            let phone = (db.teacherPhones && db.teacherPhones[t]) ? ` - ${db.teacherPhones[t]}` : ''; return t + phone;
+        }).join('\n');
+        
+        document.getElementById('form-title').innerText = "تعديل بيانات المشرف"; document.getElementById('save-btn').innerText = "تحديث بيانات المشرف"; 
+        document.getElementById('cancel-btn').style.display = "block"; window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }
 
-    function deleteSup(i) {
-        if(confirm('هل أنت متأكد من حذف هذا المشرف؟')) { db.supervisors.splice(i, 1); save(); renderSupList(); }
+    function deleteSup(i) { if(confirm('هل أنت متأكد من حذف هذا المشرف؟')) { db.supervisors.splice(i, 1); saveAndSync(); } }
+
+    function resetForm() { 
+        document.getElementById('edit-index').value = "-1"; document.getElementById('sup-name').value = ""; 
+        document.getElementById('sup-pass').value = ""; document.getElementById('teacher-paste').value = ""; 
+        document.getElementById('form-title').innerText = "إضافة/تعديل مشرف ومناوبين"; document.getElementById('save-btn').innerText = "حفظ بيانات المشرف"; 
+        document.getElementById('cancel-btn').style.display = "none"; 
     }
 
+    // --- التوزيع وقوائم المناوبين مع الحفظ التلقائي ---
     function initSupInterface() {
-        const s = currentUser.data;
-        document.getElementById('sup-welcome').innerText = `مرحباً أ. ${s.name} - توزيع يوم ${s.day}`;
+        if(!currentUser || currentUser.role !== 'sup') return;
+        const s = currentUser.data; const week = document.getElementById('sup-week-select').value;
+        document.getElementById('sup-welcome').innerText = `مرحباً أ. ${s.name} - يوم ${s.day}`;
         const area = document.getElementById('sup-distribution-area');
         if(db.locations.length === 0) { area.innerHTML = "<p style='color:red'>لم يتم تحديد مواقع مناوبة.</p>"; return; }
 
         area.innerHTML = db.locations.map(loc => {
-            const saved = db.assignments[`${s.day}-${loc}`] || [];
+            const saved = db.assignments[week][`${s.day}-${loc}`] || [];
             return `
                 <div style="margin-bottom:15px; background:white; padding:15px; border-radius:8px; border-right:5px solid var(--deep-sky)">
-                    <strong>الموقع: ${loc}</strong>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <strong>الموقع: ${loc}</strong>
+                        <button class="btn-pin" onclick="pinLocation('${loc}')" title="نسخ المعلمين المحددين في هذا الموقع إلى جميع الأسابيع الأربعة">📌 تثبيت للكل</button>
+                    </div>
                     <div class="multi-select-box" style="margin-top:10px">
-                        ${s.teachers.map(t => `<label style="display:block; padding:5px; border-bottom:1px solid #f1f5f9; cursor:pointer"><input type="checkbox" name="${loc}" value="${t}" ${saved.includes(t) ? 'checked' : ''}> ${t}</label>`).join('')}
+                        ${s.teachers.map(t => {
+                            let hasPhone = db.teacherPhones && db.teacherPhones[t] ? '📱' : '';
+                            return `<label style="display:block; padding:5px; border-bottom:1px solid #f1f5f9; cursor:pointer">
+                                <input type="checkbox" name="${loc}" value="${t}" ${saved.includes(t) ? 'checked' : ''} onchange="saveDistributionLocally()"> 
+                                ${t} <span style="font-size:0.8rem; margin-right:5px;" title="مربوط برقم هاتف للمراسلة">${hasPhone}</span>
+                            </label>`
+                        }).join('')}
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function saveDistribution() {
-        const s = currentUser.data;
-        db.locations.forEach(loc => {
-            db.assignments[`${s.day}-${loc}`] = Array.from(document.querySelectorAll(`input[name="${loc}"]:checked`)).map(el => el.value);
+    function saveDistributionLocally() {
+        const s = currentUser.data; const week = document.getElementById('sup-week-select').value;
+        db.locations.forEach(loc => { 
+            const key = `${s.day}-${loc}`;
+            let existing = db.assignments[week][key] || [];
+            existing = existing.filter(t => !s.teachers.includes(t)); 
+            const checked = Array.from(document.querySelectorAll(`input[name="${loc}"]:checked`)).map(el => el.value); 
+            db.assignments[week][key] = existing.concat(checked); 
         });
-        save(); alert('تم تثبيت التوزيع ومزامنته مع باقي الأجهزة.');
+        saveLocalOnly();
+        triggerAutoSave(); 
+    }
+
+    function saveDistributionAndSync() {
+        saveDistributionLocally(); 
+        saveAndSync();
+        const week = document.getElementById('sup-week-select').value;
+        showCustomAlert(`تم حفظ واعتماد قوائم المناوبين (للأسبوع ${week}) ورفعها للإدارة بنجاح!`);
+    }
+
+    function copyToAllWeeks() {
+        if(!confirm('هل أنت متأكد من نسخ التوزيع الحالي لجميع الأسابيع الأربعة؟')) return;
+        const s = currentUser.data; const currentSelections = {};
+        db.locations.forEach(loc => { currentSelections[loc] = Array.from(document.querySelectorAll(`input[name="${loc}"]:checked`)).map(el => el.value); });
+
+        for(let w = 1; w <= 4; w++) {
+            db.locations.forEach(loc => {
+                const key = `${s.day}-${loc}`;
+                let existing = db.assignments[w][key] || [];
+                existing = existing.filter(t => !s.teachers.includes(t));
+                db.assignments[w][key] = existing.concat(currentSelections[loc]);
+            });
+        }
+        saveAndSync(); 
+        showCustomAlert('تم نسخ قوائم التوزيع لجميع الأسابيع، وتثبيتها بنجاح!');
+    }
+
+    function pinLocation(loc) {
+        const s = currentUser.data;
+        const selectedTeachers = Array.from(document.querySelectorAll(`input[name="${loc}"]:checked`)).map(el => el.value);
+        if(!confirm(`هل تريد تثبيت المعلمين المحددين في موقع "${loc}" لجميع الأسابيع الأربعة؟`)) return;
+
+        for(let w = 1; w <= 4; w++) {
+            const key = `${s.day}-${loc}`;
+            let existing = db.assignments[w][key] || [];
+            existing = existing.filter(t => !s.teachers.includes(t));
+            db.assignments[w][key] = existing.concat(selectedTeachers);
+        }
+        saveAndSync();
+        showCustomAlert(`تم تثبيت المناوبين في موقع "${loc}" لجميع الأسابيع بنجاح!`);
+    }
+
+    function markMsg(btn, key, type) {
+        db.msgStatus[key] = true; saveLocalOnly(); triggerAutoSave();
+        btn.classList.remove('wa-btn', 'sms-btn'); btn.classList.add('sent-btn');
+        btn.innerText = type === 'wa' ? '✔ تم واتساب' : '✔ تم رسالة';
+    }
+
+    // --- عرض الجداول والطباعة ---
+    function renderScheduleTable() {
+        const day = document.getElementById('select-day-view').value; const week = document.getElementById('admin-week-select').value;
+        document.getElementById('main-table-body').innerHTML = db.locations.map(loc => {
+            const ts = getValidTeachers(week, day, loc);
+            return `<tr><td style="font-weight:bold">${loc}</td><td>${ts.join(' - ') || '<span style="color:#94a3b8">لا يوجد مناوبين مجدولين</span>'}</td><td class="no-print"><input type="text" id="n-${day}-${loc}" placeholder="ملاحظة للأسبوع ${week}..."></td><td class="no-print"><button onclick="addNote('${day}','${loc}', '${week}')">إضافة</button></td></tr>`;
+        }).join('');
     }
 
     function renderFinalView() {
-        const s = currentUser.data;
+        const s = currentUser.data; const week = document.getElementById('print-week-select').value;
         document.getElementById('final-print-body').innerHTML = db.locations.map(loc => {
-            const ts = db.assignments[`${s.day}-${loc}`] || [];
-            return `<tr><td>${loc}</td><td>${ts.join(' - ') || '---'}</td><td></td></tr>`;
+            const ts = getValidTeachers(week, s.day, loc);
+            let teachersHtml = ts.length > 0 ? ts.map(t => {
+                let phone = (db.teacherPhones && db.teacherPhones[t]) ? db.teacherPhones[t] : '';
+                let fullPhone = phone ? (phone.startsWith('968') ? phone : (phone.length === 8 ? '968'+phone : phone)) : '';
+                let dutyDate = getDutyDateString(week, s.day);
+                let msg = `السلام عليكم أستاذي الكريم ${t}،\nنود تذكيرك بمناوبتك ليوم ${s.day} (تاريخ ${dutyDate}) في موقع: *${loc}*.\nتمنياتنا لك بيوم دراسي موفق! 🌹`;
+                let waLink = fullPhone ? `whatsapp://send?phone=${fullPhone}&text=${encodeURIComponent(msg)}` : `whatsapp://send?text=${encodeURIComponent(msg)}`;
+                let smsLink = fullPhone ? `sms:${fullPhone}?body=${encodeURIComponent(msg)}` : `sms:?body=${encodeURIComponent(msg)}`;
+                let keyWa = `${week}-${s.day}-${loc}-${t}-wa`; let keySms = `${week}-${s.day}-${loc}-${t}-sms`;
+                let isWaSent = db.msgStatus && db.msgStatus[keyWa]; let isSmsSent = db.msgStatus && db.msgStatus[keySms];
+
+                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9;">
+                        <span style="font-weight:bold;">${t} ${phone ? `<span class="no-print" style="color:#64748b; font-size:0.8rem; font-weight:normal;">(${phone})</span>` : ''}</span>
+                        <span class="no-print" style="display:flex; gap:5px;">
+                            <a href="${waLink}" target="_blank" onclick="markMsg(this, '${keyWa}', 'wa')" class="msg-btn ${isWaSent ? 'sent-btn' : 'wa-btn'}">${isWaSent ? '✔ تم واتساب' : '💬 واتساب'}</a>
+                            <a href="${smsLink}" onclick="markMsg(this, '${keySms}', 'sms')" class="msg-btn ${isSmsSent ? 'sent-btn' : 'sms-btn'}">${isSmsSent ? '✔ تم رسالة' : '✉️ رسالة'}</a>
+                        </span></div>`;
+            }).join('') : '<span style="color:#94a3b8">لا يوجد مناوبين</span>';
+            return `<tr><td style="font-weight:bold; vertical-align:middle;">${loc}</td><td>${teachersHtml}</td><td></td></tr>`;
         }).join('');
     }
 
     function prepareAndPrint(mode) {
-        let day, supData;
-        if(mode === 'general') { day = document.getElementById('select-day-view').value; supData = db.supervisors.find(s => s.day === day); } 
-        else { day = currentUser.data.day; supData = currentUser.data; renderFinalView(); }
-        document.getElementById('p-day').innerText = day; document.getElementById('p-subject').innerText = supData ? supData.subject : 'غير محدد';
-        document.getElementById('p-sup').innerText = supData ? supData.name : 'غير محدد'; document.getElementById('p-date').innerText = new Date().toLocaleDateString('ar-OM');
-        window.print();
+        let day, supNames, supSubjects, week;
+        if(mode === 'general') { 
+            day = document.getElementById('select-day-view').value; week = document.getElementById('admin-week-select').value;
+            let supDataList = db.supervisors.filter(s => s.day === day);
+            supNames = supDataList.length > 0 ? supDataList.map(s => s.name).join(' و ') : 'غير محدد';
+            supSubjects = supDataList.length > 0 ? supDataList.map(s => s.subject).join(' و ') : 'غير محدد';
+            renderScheduleTable(); 
+        } else { 
+            day = currentUser.data.day; week = document.getElementById('print-week-select').value;
+            supNames = currentUser.data.name; supSubjects = currentUser.data.subject;
+            renderFinalView(); 
+        }
+        
+        document.getElementById('p-week').innerText = week; document.getElementById('p-day').innerText = day; 
+        document.getElementById('p-duty-date').innerText = getDutyDateString(week, day);
+        document.getElementById('p-subject').innerText = supSubjects; document.getElementById('p-sup').innerText = supNames; 
+        setTimeout(() => { window.print(); }, 300);
     }
 
-    function renderScheduleTable() {
-        const day = document.getElementById('select-day-view').value;
-        document.getElementById('main-table-body').innerHTML = db.locations.map(loc => {
-            const ts = db.assignments[`${day}-${loc}`] || [];
-            return `
-                <tr>
-                    <td style="font-weight:bold">${loc}</td><td>${ts.join(' - ') || '<span style="color:#94a3b8">لا يوجد مناوبين</span>'}</td>
-                    <td class="no-print"><input type="text" id="n-${day}-${loc}" placeholder="أضف ملاحظة..."></td>
-                    <td class="no-print"><button onclick="addNote('${day}','${loc}')">إضافة</button></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    function addNote(day, loc) {
-        const text = document.getElementById(`n-${day}-${loc}`).value;
-        const teachers = db.assignments[`${day}-${loc}`] || [];
-        if(!text || !teachers.length) return alert('تأكد من كتابة الملاحظة ووجود معلمين في الموقع.');
-        teachers.forEach(t => { db.notes.push({ teacher: t, text: text, date: new Date().toLocaleDateString('ar-OM') }); });
-        save(); document.getElementById(`n-${day}-${loc}`).value = ''; alert('تمت إضافة الملاحظة للمزامنة.');
+    // --- الملاحظات وإدارة المواقع ---
+    function addNote(day, loc, week) {
+        const text = document.getElementById(`n-${day}-${loc}`).value; const teachers = db.assignments[week][`${day}-${loc}`] || [];
+        if(!text || !teachers.length) return alert('تأكد من كتابة الملاحظة ووجود معلمين مجدولين في هذا الأسبوع.');
+        teachers.forEach(t => { db.notes.push({ teacher: t, text: `(أسبوع ${week}) ${text}`, date: new Date().toLocaleDateString('ar-OM') }); });
+        saveAndSync(); document.getElementById(`n-${day}-${loc}`).value = ''; showCustomAlert('تم إضافة الملاحظة وتثبيتها بنجاح.');
     }
 
     function renderNotes() {
-        const f = document.getElementById('note-filter').value;
-        const filtered = f === 'all' ? db.notes : db.notes.filter(n => n.teacher === f);
-        document.getElementById('notes-list-body').innerHTML = filtered.map((n, i) => `
-            <tr><td>${n.teacher}</td><td>${n.text}</td><td>${n.date}</td><td class="no-print"><button class="btn-del" onclick="deleteNote(${i})">حذف</button></td></tr>
-        `).reverse().join('');
+        const f = document.getElementById('note-filter').value; const filtered = f === 'all' ? db.notes : db.notes.filter(n => n.teacher === f);
+        document.getElementById('notes-list-body').innerHTML = filtered.map((n, i) => `<tr><td>${n.teacher}</td><td>${n.text}</td><td>${n.date}</td><td class="no-print"><button class="btn-del" onclick="deleteNote(${i})">حذف</button></td></tr>`).reverse().join('');
     }
 
-    function deleteNote(i) { db.notes.splice(i, 1); save(); renderNotes(); }
+    function deleteNote(i) { db.notes.splice(i, 1); saveAndSync(); }
 
     function updateNoteFilter() {
         let ts = []; db.supervisors.forEach(s => ts = ts.concat(s.teachers));
@@ -419,34 +764,22 @@
     }
 
     function switchSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(id));
-        if(btn) btn.classList.add('active');
-        if(id === 'daily-schedule') renderScheduleTable();
-        if(id === 'admin-notes') renderNotes();
-        if(id === 'sup-final-view') renderFinalView();
+        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(id)); if(btn) btn.classList.add('active');
+        refreshCurrentView();
     }
 
     function logout() { if(confirm('هل تريد تسجيل الخروج؟')) location.reload(); }
-    
-    function resetForm() { 
-        document.getElementById('edit-index').value = "-1"; document.getElementById('sup-name').value = ""; 
-        document.getElementById('sup-pass').value = ""; document.getElementById('teacher-paste').value = ""; 
-        document.getElementById('form-title').innerText = "إضافة/تعديل مشرف"; document.getElementById('cancel-btn').style.display = "none"; 
-    }
 
     function addLocation() { 
         const l = document.getElementById('new-loc').value.trim(); 
-        if(l && !db.locations.includes(l)){ db.locations.push(l); document.getElementById('new-loc').value=''; save(); renderLocs(); } 
+        if(l && !db.locations.includes(l)){ db.locations.push(l); document.getElementById('new-loc').value=''; saveAndSync(); } 
     }
 
-    function renderLocs() { 
-        document.getElementById('loc-list').innerHTML = db.locations.map((l,i) => `<span class="loc-tag">${l} <button onclick="deleteLoc(${i})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold">×</button></span>`).join(''); 
-    }
+    function renderLocs() { document.getElementById('loc-list').innerHTML = db.locations.map((l,i) => `<span class="loc-tag">${l} <button onclick="deleteLoc(${i})" style="color:red; border:none; background:none; cursor:pointer; font-weight:bold">×</button></span>`).join(''); }
     
-    function deleteLoc(i) { if(confirm('متأكد من الحذف؟')) { db.locations.splice(i, 1); save(); renderLocs(); } }
+    function deleteLoc(i) { if(confirm('متأكد من الحذف؟ سيتم إزالته من جميع الأسابيع.')) { db.locations.splice(i, 1); saveAndSync(); } }
 </script>
 
 </body>
